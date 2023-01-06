@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from forms.main_form import Ui_MainWindow
 from add_change import AddChangeWindow
-
+from export import export_phones
 
 class PhoneDirectory(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -21,6 +21,8 @@ class PhoneDirectory(QMainWindow, Ui_MainWindow):
         self.btn_change.clicked.connect(self.add_change)
         self.btn_delete.clicked.connect(self.delete_contact)
         self.all_info_table.cellClicked.connect(self.table_checked)
+        self.btn_export.clicked.connect(self.export)
+        # self.all_info_table.ite.connect(self.phones_view)
         self.add_window = None
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("icons/icon.png"))
@@ -79,9 +81,7 @@ class PhoneDirectory(QMainWindow, Ui_MainWindow):
 
     def table_checked(self):
         row_index = self.all_info_table.currentRow()
-        self.additional_info_dictionary['FIO'] = f'{self.additional_info[row_index][1]} ' \
-                                                 f'{self.additional_info[row_index][2]} ' \
-                                                 f'{self.additional_info[row_index][4]}'
+        self.additional_info_dictionary['FIO'] = self.additional_info[row_index][1]
         self.additional_info_dictionary['City'] = self.additional_info[row_index][3]
         self.additional_info_dictionary['Address'] = self.additional_info[row_index][4]
         self.additional_info_dictionary['Comment'] = self.additional_info[row_index][5]
@@ -110,6 +110,14 @@ class PhoneDirectory(QMainWindow, Ui_MainWindow):
             for j, elem in enumerate(phones_to_contact_table[items]):
                 self.contact_table.setItem(items, j, QtWidgets.QTableWidgetItem(elem))
         self.phones_view()
+
+    def export(self):
+        export_phones()
+        reply = QtWidgets.QMessageBox.information(None, 'Успешное завершение!',
+                                               'Экспорт успешно завершен!',
+                                               QtWidgets.QMessageBox.Yes)
+        if reply == QtWidgets.QMessageBox.Yes:
+            return
 
 
 if __name__ == '__main__':

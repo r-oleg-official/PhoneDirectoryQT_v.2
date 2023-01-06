@@ -44,7 +44,7 @@ class AddChangeWindow(QMainWindow, Ui_Form):
         # for i in range(len(phone_type)):
         #     print(f'{phone_type[i][0]}. {phone_type[i][1]}')
         # contact_type = int(input())
-        print(self.list_of_numbers)
+        # print(self.list_of_numbers)
         check_contact = '''SELECT id, fio FROM users WHERE fio = ?'''
         check_user_data = cursor.execute(check_contact, (fio,)).fetchone()
         contact_type, phone = None, None
@@ -77,6 +77,7 @@ class AddChangeWindow(QMainWindow, Ui_Form):
             user_add_query = '''INSERT INTO users (fio, birthday, city, address, comment, info) 
                             VALUES (?, ?, ?, ?, ?, ?);'''
             data = (fio, birthday, city, address, comment, info)
+            print(data)
             cursor.execute(user_add_query, data)
             con.commit()
             for item in self.list_of_numbers:
@@ -91,12 +92,14 @@ class AddChangeWindow(QMainWindow, Ui_Form):
                 cursor.execute(phone_add_query, (phone, contact_type))
                 con.commit()
             user_id_query = '''SELECT id FROM users WHERE fio = ?'''
-            user_id_data = cursor.execute(user_id_query, data[0]).fetchone()
-            phone_id_query = '''SELECT id FROM phones WHERE phone_number = ?'''
-            phone_id_data = cursor.execute(phone_id_query, (phone,)).fetchone()
-            add_contact = '''INSERT INTO directory (phone_id, user_id) VALUES (?, ?)'''
-            cursor.execute(add_contact, (phone_id_data[0], user_id_data[0]))
-            con.commit()
+            user_id_data = cursor.execute(user_id_query, (data[0],)).fetchone()
+            for item in self.list_of_numbers:
+                phone = item[1]
+                phone_id_query = '''SELECT id FROM phones WHERE phone_number = ?'''
+                phone_id_data = cursor.execute(phone_id_query, (phone,)).fetchone()
+                add_contact = '''INSERT INTO directory (phone_id, user_id) VALUES (?, ?)'''
+                cursor.execute(add_contact, (phone_id_data[0], user_id_data[0]))
+                con.commit()
         self.close()
         con.close()
 
